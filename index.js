@@ -10,6 +10,7 @@ const PORT = process.env.MONGO_PORT;
 const IP = process.env.MONGO_IP;
 
 const user = require("./server/user/user");
+const news = require("./server/news/news");
 
 mongoose.connect(
   `mongodb://${USER}:${PASS}@${IP}:${PORT}/game_test?authSource=admin`,
@@ -22,7 +23,17 @@ mongoose.connection
     console.warn("Warning", error);
   });
 
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
+
 app.use("/user", user);
+app.use("/news", news);
 
 const server = app.listen(8080, () => {
   const host = server.address().address;
