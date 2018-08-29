@@ -1,29 +1,9 @@
-var app = require("express")();
-const mongoose = require("mongoose");
-var http = require("http").Server(app);
+const app = require("express")();
+const bodyParser = require('body-parser')
+const cookieParser = require('cookie-parser')
+require('./db/mongoose');
 
-mongoose.Promise = global.Promise;
-
-const USER = process.env.MONGO_USER;
-const PASS = process.env.MONGO_PASS;
-const PORT = process.env.MONGO_PORT;
-const IP = process.env.MONGO_IP;
-
-const user = require("./server/user/user");
-const news = require("./server/news/news");
-
-mongoose.connect(
-  `mongodb://${USER}:${PASS}@${IP}:${PORT}/game_test?authSource=admin`,
-  { useNewUrlParser: true }
-);
-
-mongoose.connection
-  .once("open", () => console.log("Connected to database"))
-  .on("error", error => {
-    console.warn("Warning", error);
-  });
-
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
     "Access-Control-Allow-Headers",
@@ -31,9 +11,11 @@ app.use(function(req, res, next) {
   );
   next();
 });
+app.use(bodyParser.json())
+app.use(cookieParser());
 
-app.use("/user", user);
-app.use("/news", news);
+require('./server/news/news')(app)
+require('./server/auth/auth')(app)
 
 const server = app.listen(8080, () => {
   const host = server.address().address;
