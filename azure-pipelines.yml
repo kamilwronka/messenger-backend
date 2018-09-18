@@ -4,15 +4,15 @@
 # https://docs.microsoft.com/vsts/pipelines/languages/javascript
 
 pool:
-  vmImage: 'Ubuntu 16.04'
+  vmImage: "Ubuntu 16.04"
 
 steps:
-- task: NodeTool@0
-  inputs:
-    versionSpec: '8.11.4'
-  displayName: 'Install Node.js'
+  - task: NodeTool@0
+    inputs:
+      versionSpec: "8.11.4"
+    displayName: "Install Node.js"
 
-- script: |
-    npm install
-    npm run start
-  displayName: 'npm install and build'
+  - script: |
+      yarn
+      yarn test
+    displayName: "yarn install and test"
