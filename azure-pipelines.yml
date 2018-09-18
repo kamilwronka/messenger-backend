@@ -13,6 +13,6 @@ steps:
     displayName: "Install Node.js"
 
   - script: |
-      yarn
+      yarn install
       yarn test
     displayName: "yarn install and test"
