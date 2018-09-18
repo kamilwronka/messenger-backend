@@ -1,6 +1,7 @@
 {
   "name": "game-backend",
   "scripts": {
+    "start": "node ./index.js",
     "dev": "nodemon ./index.js"
   },
   "version": "1.0.0",
