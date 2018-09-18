@@ -14,7 +14,7 @@ app.use(function(req, res, next) {
 app.use(bodyParser.json());
 app.use(cookieParser());
 
-require("./server/news/news")(app);
+require("./server/news")(app);
 require("./server/auth/auth")(app);
 
 const server = app.listen(8080, () => {
