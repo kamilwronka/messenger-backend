@@ -4,15 +4,10 @@ const mongoose = require("mongoose");
 
 mongoose.Promise = global.Promise;
 
-const USER = process.env.MONGO_USER;
-const PASS = process.env.MONGO_PASS;
-const PORT = process.env.MONGO_PORT;
-const IP = process.env.MONGO_IP;
+const MONGODB_URI = process.env.MONGODB_URI;
 
 describe("Creating records", () => {
-  mongoose.connect(
-    `mongodb://${USER}:${PASS}@${IP}:${PORT}/game_test?authSource=admin`
-  );
+  mongoose.connect(MONGODB_URI);
   mongoose.connection
     .once("open", () => console.log("Good to go!"))
     .on("error", error => {
