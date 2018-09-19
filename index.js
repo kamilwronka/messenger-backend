@@ -17,9 +17,11 @@ app.use(cookieParser());
 require("./server/news")(app);
 require("./server/auth/auth")(app);
 
-const server = app.listen(4000, () => {
+const PORT = process.env.PORT || 4000;
+
+const server = app.listen(PORT, () => {
   const host = server.address().address;
   const port = server.address().port;
 
-  console.log(`App is listening at PORT: ${4000}`);
+  console.log(`App is listening at PORT: ${PORT}`);
 });
