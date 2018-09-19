@@ -1,5 +1,8 @@
 {
   "name": "game-backend",
+  "engines": {
+    "node": "8.11.4"
+  },
   "scripts": {
     "dev": "nodemon ./indexjs",
     "test": "jest"
