@@ -4,7 +4,8 @@
     "node": "8.11.4"
   },
   "scripts": {
-    "dev": "nodemon ./indexjs",
+    "start": "node ./index.js",
+    "dev": "nodemon ./index.js",
     "test": "jest"
   },
   "version": "1.0.0",
