@@ -7,7 +7,10 @@ mongoose.Promise = global.Promise;
 const MONGODB_URI = process.env.MONGODB_URI;
 
 describe("Creating records", () => {
-  mongoose.connect(MONGODB_URI);
+  mongoose.connect(
+    `${MONGODB_URI}`,
+    { useNewUrlParser: true }
+  );
   mongoose.connection
     .once("open", () => console.log("Good to go!"))
     .on("error", error => {

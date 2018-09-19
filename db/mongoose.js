@@ -4,7 +4,10 @@ mongoose.Promise = global.Promise;
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
-mongoose.connect(MONGODB_URI);
+mongoose.connect(
+  `${MONGODB_URI}`,
+  { useNewUrlParser: true }
+);
 
 mongoose.connection
   .once("open", () => console.log("Connected to database"))
