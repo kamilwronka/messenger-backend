@@ -1,25 +1,51 @@
-require('../../services/passport')
-const passport = require('passport');
-const requireAuth = passport.authenticate('jwt', { session: false });
-const requireSignin = passport.authenticate('local', { session: false });
+const pick = require("lodash/pick");
+const User = require("../user/user.model");
+const requireAuth = require("../middleware/requireAuth");
 
-const User = require('../user/user')
+module.exports = app => {
+  app.post("/api/auth/login", (req, res) => {
+    const body = pick(req.body, ["email", "password"]);
 
-module.exports = (app) => {
-	app.get('/', requireAuth, (req, res) => {
-		res.send({ hi: 'there' });
-	});
-	app.post('/signin', requireSignin, async (req, res) => {
-		const token = await req.user.generateAuthToken();
+    User.findByCredencials(body.email, body.password)
+      .then(user => {
+        return user.generateAuthToken().then(token => {
+          res.header("x-auth", token).send(user);
+        });
+      })
+      .catch(err => {
+        res.status(400).send();
+      });
+  });
 
-		res.cookie('token', token, { maxAge: 24 * 60 * 60 * 1000 * 30, httpOnly: true });
-		res.send({ user: req.user });
-	});
-	app.post('/signup', async (req, res) => {
-		const user = await new User(req.body).save();
-		const token = await user.generateAuthToken();
+  app.post("/api/auth/register", (req, res) => {
+    const body = pick(req.body, ["email", "password"]);
+    const user = new User(body);
 
-		res.cookie('token', token, { maxAge: 24 * 60 * 60 * 1000 * 30, httpOnly: true });
-		res.send({ user });
-	});
+    user
+      .save()
+      .then(user => {
+        return user.generateAuthToken();
+      })
+      .then(token => {
+        res.header("x-auth", token).send(user);
+      })
+      .catch(err => {
+        res.status(400).send(err);
+      });
+  });
+
+  app.get("/api/currentUser", requireAuth, (req, res) => {
+    res.send(req.user);
+  });
+
+  app.delete("/api/auth/logout", requireAuth, (req, res) => {
+    req.user.removeToken(req.token).then(
+      () => {
+        res.status(200).send();
+      },
+      () => {
+        res.status(400).send();
+      }
+    );
+  });
 };
