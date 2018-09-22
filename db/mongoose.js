@@ -2,13 +2,10 @@ const mongoose = require("mongoose");
 
 mongoose.Promise = global.Promise;
 
-const USER = process.env.MONGO_USER;
-const PASS = process.env.MONGO_PASS;
-const PORT = process.env.MONGO_PORT;
-const IP = process.env.MONGO_IP;
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/test";
 
 mongoose.connect(
-  `mongodb://${USER}:${PASS}@${IP}:${PORT}/game_test?authSource=admin`,
+  `${MONGODB_URI}`,
   { useNewUrlParser: true }
 );
 

@@ -14,8 +14,8 @@ app.use(function(req, res, next) {
 app.use(bodyParser.json());
 app.use(cookieParser());
 
-require("./server/news/news")(app);
-require("./server/auth/auth")(app);
+require("./server/news/news.controller")(app);
+require("./server/auth/auth.controller")(app);
 
 const PORT = process.env.PORT || 4000;
 

@@ -1,7 +1,12 @@
 {
   "name": "game-backend",
+  "engines": {
+    "node": "8.11.4"
+  },
   "scripts": {
-    "dev": "nodemon ./index.js"
+    "start": "node ./index.js",
+    "dev": "nodemon ./index.js",
+    "test": "jest"
   },
   "version": "1.0.0",
   "main": "index.js",
