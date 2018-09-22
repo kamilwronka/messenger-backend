@@ -9,7 +9,7 @@ module.exports = app => {
     User.findByCredencials(body.email, body.password)
       .then(user => {
         return user.generateAuthToken().then(token => {
-          res.header("x-auth", token).send(user);
+          res.header("Authorization", token).send(user);
         });
       })
       .catch(err => {
@@ -18,7 +18,7 @@ module.exports = app => {
   });
 
   app.post("/api/auth/register", (req, res) => {
-    const body = pick(req.body, ["email", "password"]);
+    const body = pick(req.body, ["email", "password", "username"]);
     const user = new User(body);
 
     user
@@ -27,7 +27,7 @@ module.exports = app => {
         return user.generateAuthToken();
       })
       .then(token => {
-        res.header("x-auth", token).send(user);
+        res.header("Authorization", token).send(user);
       })
       .catch(err => {
         res.status(400).send(err);

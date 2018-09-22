@@ -21,6 +21,12 @@ const UserSchema = new mongoose.Schema({
     required: true,
     minlength: 6
   },
+  username: {
+    type: String,
+    required: true,
+    minlength: 3,
+    unique: true
+  },
   tokens: [
     {
       access: {
@@ -82,7 +88,7 @@ UserSchema.methods = {
     const user = this;
     const userObject = user.toObject();
 
-    return pick(userObject, ["_id", "email"]);
+    return pick(userObject, ["_id", "email", "username"]);
   }
 };
 
