@@ -1,10 +1,10 @@
-const NewsSchema = require("./newsSchema");
+const NewsSchema = require("./news.model");
 
 const mongoose = require("mongoose");
 
 mongoose.Promise = global.Promise;
 
-const MONGODB_URI = process.env.MONGODB_URI;
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/test";
 
 describe("Creating records", () => {
   mongoose.connect(
@@ -16,7 +16,7 @@ describe("Creating records", () => {
     .on("error", error => {
       console.warn("Warning", error);
     });
-  it("should save a user", () => {
+  it("should save a user", done => {
     const news = new NewsSchema({
       authorName: "Kamil",
       authorImg: "http://getdrawings.com/img/person-silhouette-icon-23.png",
@@ -29,6 +29,7 @@ describe("Creating records", () => {
       .then(() => {
         console.log("news saved");
         expect(news.isNew).toBe(false);
+        done();
       })
       .catch(err => console.log(err));
   });
