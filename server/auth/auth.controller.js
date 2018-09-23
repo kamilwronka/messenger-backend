@@ -13,7 +13,7 @@ module.exports = app => {
         });
       })
       .catch(err => {
-        res.status(400).send();
+        res.status(400).send(err);
       });
   });
 
