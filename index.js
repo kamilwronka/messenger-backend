@@ -1,6 +1,8 @@
 const app = require("express")();
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
+const swaggerUi = require("swagger-ui-express");
+const swaggerDocument = require("./swagger.json");
 require("./db/mongoose");
 
 app.use(function(req, res, next) {
@@ -15,9 +17,12 @@ app.use(function(req, res, next) {
 });
 app.use(bodyParser.json());
 app.use(cookieParser());
+app.use("/api/doc", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 require("./server/news/news.controller")(app);
 require("./server/auth/auth.controller")(app);
+require("./server/worlds/worlds.controller")(app);
+require("./server/village/village.controller")(app);
 
 const PORT = process.env.PORT || 4000;
 
