@@ -39,7 +39,11 @@ module.exports = app => {
     village
       .save()
       .then(village => {
-        return res.status(200).send(village);
+        VillageModel.findByOwnerId(village.ownerId)
+          .then(villages => {
+            return res.send(villages);
+          })
+          .catch(err => res.send(err));
       })
       .catch(err => {
         res.status(400).send(err);
@@ -59,12 +63,12 @@ module.exports = app => {
         .then(() => {
           VillageModel.findById(req.params.id, (err, village) => {
             return res.status(200).send(village);
-          }).catch(err => res.send(err));
+          }).catch(err => res.status(404).send(err));
         })
-        .catch(err => res.send(err));
+        .catch(err => res.status(400).send(err));
       return Promise.resolve();
     }).catch(err => {
-      console.log(err);
+      res.status(400).send(err);
     });
   });
 
