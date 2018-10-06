@@ -1,4 +1,7 @@
 const app = require("express")();
+const compression = require("compression");
+const morgan = require("morgan");
+const helmet = require("helmet");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const swaggerUi = require("swagger-ui-express");
@@ -15,6 +18,9 @@ app.use(function(req, res, next) {
   );
   next();
 });
+app.use(compression());
+app.use(helmet());
+app.use(morgan('common'));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use("/api/doc", swaggerUi.serve, swaggerUi.setup(swaggerDocument));

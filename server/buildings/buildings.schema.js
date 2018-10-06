@@ -4,22 +4,24 @@ const { isNil } = require("lodash");
 
 //buildings schema
 
-const BuildingsSchema = new Schema({
-  townHall: {
+const BuildingsSchema = new Schema(
+  {
+    id: {
+      type: Number,
+      required: true
+    },
+    name: {
+      type: String,
+      required: true
+    },
     level: {
       type: Number,
       default: 1,
       required: true
     }
   },
-  defensiveWall: {
-    level: {
-      type: Number,
-      default: 0,
-      required: true
-    }
-  }
-});
+  { _id: false }
+);
 
 //
 // BuildingsSchema.statics = {
