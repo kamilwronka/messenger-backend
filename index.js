@@ -20,7 +20,7 @@ app.use(function(req, res, next) {
 });
 app.use(compression());
 app.use(helmet());
-app.use(morgan('common'));
+app.use(morgan("common"));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use("/api/doc", swaggerUi.serve, swaggerUi.setup(swaggerDocument));

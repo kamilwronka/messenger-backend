@@ -77,29 +77,36 @@ VillageSchema.methods = {
   addBuildingToTheQueue: function(buildingId) {
     const village = this;
 
-    console.log(village.buildings);
-    const desiredBuilding = find(
-      village.buildings,
-      building => buildingId === building.id
-    );
+    const isBuildingOnList = () => {
+      const building = find(
+        village.buildsInProggress,
+        building => building.buildingId === buildingId
+      );
+      return !isNil(building);
+    };
 
-    console.log(desiredBuilding);
-
-    const timestamp = Date.now();
-    const timeout = 1000 * 60 * 10;
-
-    return village.update({
-      $push: {
-        buildsInProggress: {
-          name: desiredBuilding.name,
-          buildingId,
-          start: timestamp,
-          end: timestamp + timeout,
-          fromLevel: desiredBuilding.level,
-          toLevel: desiredBuilding.level + 1
+    if (isBuildingOnList()) {
+      return Promise.reject("Wybrany budynek jest już rozbudowywany");
+    } else {
+      const timestamp = Date.now();
+      const timeout = 1000 * 60 * 5;
+      const desiredBuilding = find(
+        village.buildings,
+        building => buildingId === building.id
+      );
+      return village.update({
+        $push: {
+          buildsInProggress: {
+            name: desiredBuilding.name,
+            buildingId,
+            start: timestamp,
+            end: timestamp + timeout,
+            fromLevel: desiredBuilding.level,
+            toLevel: desiredBuilding.level + 1
+          }
         }
-      }
-    });
+      });
+    }
   }
 };
 
