@@ -26,6 +26,6 @@ const RawMaterialsSchema = new Schema({
       required: true
     }
   }
-});
+}, { _id : false });
 
 module.exports = RawMaterialsSchema;
