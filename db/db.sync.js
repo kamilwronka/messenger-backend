@@ -19,7 +19,6 @@ const syncDatabase = async () => {
 
       village.buildings = village.toObject().buildings.map(elem => {
         upgradedBuildings.map(upgraded => {
-          console.log(upgraded, elem);
           if (upgraded.buildingId === elem.id) {
             elem.level = upgraded.toLevel;
             return elem;
