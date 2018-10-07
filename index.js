@@ -7,6 +7,7 @@ const cookieParser = require("cookie-parser");
 const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./swagger.json");
 require("./db/mongoose");
+require("./db/db.sync")();
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
