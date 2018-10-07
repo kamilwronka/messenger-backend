@@ -1,3 +1,4 @@
+// require("@babel/polyfill");
 const app = require("express")();
 const compression = require("compression");
 const morgan = require("morgan");
@@ -6,6 +7,7 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./swagger.json");
+
 require("./db/mongoose");
 require("./db/db.sync")();
 
