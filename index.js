@@ -30,6 +30,7 @@ require("./server/news/news.controller")(app);
 require("./server/auth/auth.controller")(app);
 require("./server/worlds/worlds.controller")(app);
 require("./server/village/village.controller")(app);
+require("./server/user/user.controller")(app);
 
 const PORT = process.env.PORT || 4000;
 
