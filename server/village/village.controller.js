@@ -65,7 +65,7 @@ module.exports = app => {
             return res.status(200).send(village);
           }).catch(err => res.status(404).send(err));
         })
-        .catch(err => res.status(400).send(err));
+        .catch(err => res.status(500).send({ err }));
       return Promise.resolve();
     }).catch(err => {
       res.status(400).send(err);
