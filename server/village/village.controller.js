@@ -8,7 +8,16 @@ module.exports = app => {
 
     VillageModel.findByOwnerId(ownerId)
       .then(villages => {
-        res.send(villages);
+        const mappedVillages = villages.map(elem => {
+          return pick(elem, [
+            "_id",
+            "positionX",
+            "positionY",
+            "name",
+            "rawMaterials"
+          ]);
+        });
+        res.send(mappedVillages);
       })
       .catch(err => res.send(err));
   });
