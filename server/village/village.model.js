@@ -58,18 +58,21 @@ const VillageSchema = new Schema({
 
 VillageSchema.pre("save", function(next) {
   const village = this;
-  const initialBuildings = [
-    { id: 1, name: "Ratusz", level: 1 },
-    { id: 2, name: "Koszary", level: 0 },
-    { id: 3, name: "Cegielnia", level: 1 },
-    { id: 4, name: "Kopalnia żelaza", level: 1 },
-    { id: 5, name: "Tartak", level: 1 },
-    { id: 6, name: "Spichlerz", level: 1 },
-    { id: 7, name: "Farma", level: 1 },
-    { id: 8, name: "Mur Obronny", level: 0 }
-  ];
 
-  village.buildings = initialBuildings;
+  if (village.isNew) {
+    const initialBuildings = [
+      { id: 1, name: "Ratusz", level: 1 },
+      { id: 2, name: "Koszary", level: 0 },
+      { id: 3, name: "Cegielnia", level: 1 },
+      { id: 4, name: "Kopalnia żelaza", level: 1 },
+      { id: 5, name: "Tartak", level: 1 },
+      { id: 6, name: "Spichlerz", level: 1 },
+      { id: 7, name: "Farma", level: 1 },
+      { id: 8, name: "Mur Obronny", level: 0 }
+    ];
+    village.buildings = initialBuildings;
+    next();
+  }
   next();
 });
 
@@ -89,7 +92,7 @@ VillageSchema.methods = {
       return Promise.reject("Wybrany budynek jest już rozbudowywany");
     } else {
       const timestamp = Date.now();
-      const timeout = 1000 * 60 * 5;
+      const timeout = 1000 * 60 * 0.1;
       const desiredBuilding = find(
         village.buildings,
         building => buildingId === building.id
@@ -118,6 +121,17 @@ VillageSchema.statics = {
       if (isNil(villages)) {
         return Promise.reject();
       }
+      //
+      // villages.forEach(village => {
+      //   if (village.buildsInProggress.length > 0) {
+      //     village.buildsInProggress.forEach(elem => {
+      //       if (elem.end < Date.now()) {
+      //         console.log("Build has ended");
+      //         Village.update({});
+      //       }
+      //     });
+      //   }
+      // });
 
       return Promise.resolve(villages);
     });
