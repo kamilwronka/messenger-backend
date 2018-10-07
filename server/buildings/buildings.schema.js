@@ -16,7 +16,10 @@ const BuildingsSchema = new Schema(
     },
     level: {
       type: Number,
-      default: 1,
+      required: true
+    },
+    maxLevel: {
+      type: Number,
       required: true
     }
   },
