@@ -9,7 +9,6 @@ const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./swagger.json");
 
 require("./db/mongoose");
-require("./db/db.sync")();
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -28,10 +27,7 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 app.use("/api/doc", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-require("./server/news/news.controller")(app);
 require("./server/auth/auth.controller")(app);
-require("./server/worlds/worlds.controller")(app);
-require("./server/village/village.controller")(app);
 require("./server/user/user.controller")(app);
 
 const PORT = process.env.PORT || 4000;
