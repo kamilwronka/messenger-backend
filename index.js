@@ -1,5 +1,8 @@
 // require("@babel/polyfill");
+
 const app = require("express")();
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
 const compression = require("compression");
 const morgan = require("morgan");
 const helmet = require("helmet");
@@ -29,10 +32,11 @@ app.use("/api/doc", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 require("./server/auth/auth.controller")(app);
 require("./server/user/user.controller")(app);
+require("./server/messages/messages.controller")(app, io);
 
 const PORT = process.env.PORT || 4000;
 
-const server = app.listen(PORT, () => {
+const server = http.listen(PORT, () => {
   const host = server.address().address;
   const port = server.address().port;
 
