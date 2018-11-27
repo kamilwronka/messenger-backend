@@ -7,10 +7,8 @@ const MessageSchema = new mongoose.Schema({
   },
   date: {
     type: Date,
-    required: true,
+    required: true
   }
 });
 
-const Message = mongoose.model("Message", MessageSchema);
-
-module.exports = Message;
+module.exports = MessageSchema;

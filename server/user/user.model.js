@@ -4,6 +4,10 @@ const jwt = require("jsonwebtoken");
 const { pick, isNil } = require("lodash");
 const bcrypt = require("bcryptjs");
 
+const conversation = require("../conversation/conversation.model");
+const friend = require("../friend/friend.model");
+const request = require("../requests/requests.model");
+
 const UserSchema = new mongoose.Schema({
   email: {
     type: String,
@@ -27,6 +31,9 @@ const UserSchema = new mongoose.Schema({
     minlength: 3,
     unique: true
   },
+  conversations: [conversation],
+  friends: [friend],
+  requests: [request],
   tokens: [
     {
       access: {
@@ -43,6 +50,16 @@ const UserSchema = new mongoose.Schema({
 
 UserSchema.pre("save", function(next) {
   const user = this;
+
+  console.log(user.isNew);
+
+  if (user.isNew) {
+    user.friends = [];
+    user.conversations = [];
+    user.requests = [];
+  }
+
+  console.log(user);
 
   if (user.isModified("password")) {
     bcrypt.genSalt(10, (err, salt) => {
@@ -88,7 +105,14 @@ UserSchema.methods = {
     const user = this;
     const userObject = user.toObject();
 
-    return pick(userObject, ["_id", "email", "username"]);
+    return pick(userObject, [
+      "_id",
+      "email",
+      "username",
+      "conversations",
+      "requests",
+      "friends"
+    ]);
   }
 };
 
