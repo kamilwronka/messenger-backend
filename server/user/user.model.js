@@ -31,6 +31,10 @@ const UserSchema = new mongoose.Schema({
     minlength: 3,
     unique: true
   },
+  avatar: {
+    type: String,
+    required: false
+  },
   conversations: [conversation],
   friends: [friend],
   requests: [request],

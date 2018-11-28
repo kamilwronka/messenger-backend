@@ -5,19 +5,21 @@ const requireAuth = require("../middleware/requireAuth");
 const keys = require("../../config/keys");
 
 const S3 = new AWS.S3({
+  region: "eu-central-1",
+  signatureVersion: "v4",
   accessKeyId: keys.AWS_ACCESS,
   secretAccessKey: keys.AWS_SECRET
 });
 
 module.exports = app => {
   app.get("/api/upload", requireAuth, (req, res) => {
-    const key = `${req.user.id}/${uuid()}.jpeg`;
+    const key = `${req.user.id}/${uuid()}.jpg`;
 
     S3.getSignedUrl(
       "putObject",
       {
         Bucket: "messenger-dev-bucket",
-        ContentType: "jpeg",
+        ContentType: "image/jpeg",
         Key: key
       },
       (err, url) => {

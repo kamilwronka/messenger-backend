@@ -1,8 +1,5 @@
 {
   "name": "game-backend",
-  "engines": {
-    "node": "10"
-  },
   "scripts": {
     "start": "node ./index.js",
     "dev": "webpack --config webpack.server.js --watch",
