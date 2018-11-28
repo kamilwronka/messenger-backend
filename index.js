@@ -35,6 +35,7 @@ require("./server/user/user.controller")(app);
 require("./server/messages/messages.controller")(app, io);
 require("./server/friend/friend.controller")(app);
 require("./server/requests/requests.controller")(app);
+require("./server/fileUpload/fileUpload.controller")(app);
 
 const PORT = process.env.PORT || 4000;
 
