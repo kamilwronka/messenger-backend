@@ -16,17 +16,15 @@ module.exports = app => {
 
   app.post("/api/users/avatar", requireAuth, async (req, res) => {
     const body = pick(req.body, ["url"]);
-    let user;
 
     console.log(body);
 
     try {
-      user = await User.findByIdAndUpdate(req.user.id, {
-        $set: { avatar: body.url }
-      });
-      res.status(200).send(user.avatar);
+      await User.findByIdAndUpdate(req.user.id, { $set: { avatar: body.url } });
+      const user = await User.findById(req.user.id);
+      res.send(user.avatar);
     } catch (err) {
-      res.status(400).send(err);
+      res.status(400).send("Wystąpił problem, spróbuj ponownie.");
     }
   });
 };

@@ -111,7 +111,8 @@ UserSchema.methods = {
       "username",
       "conversations",
       "requests",
-      "friends"
+      "friends",
+      "avatar"
     ]);
   }
 };
