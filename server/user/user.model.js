@@ -73,6 +73,8 @@ UserSchema.pre("save", function(next) {
   }
 });
 
+UserSchema.index({ "$**": "text" });
+
 UserSchema.methods = {
   generateAuthToken: function() {
     const user = this;

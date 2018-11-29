@@ -5,13 +5,22 @@ const requireAuth = require("../middleware/requireAuth");
 
 module.exports = app => {
   app.get("/api/users", (req, res) => {
-    User.find()
-      .then(users => {
-        res.status(200).send(users);
-      })
-      .catch(err => {
-        res.status(400).send(err);
+    User.find({ $text: { $search: req.query.query } })
+      .limit(10)
+      .exec(function(err, docs) {
+        if (err) {
+          res.send(err);
+        }
+        res.send(docs);
       });
+
+    // User.find()
+    //   .then(users => {
+    //     res.status(200).send(users);
+    //   })
+    //   .catch(err => {
+    //     res.status(400).send(err);
+    //   });
   });
 
   app.post("/api/users/avatar", requireAuth, async (req, res) => {

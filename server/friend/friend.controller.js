@@ -4,8 +4,8 @@ const User = require("../user/user.model");
 const requireAuth = require("../middleware/requireAuth");
 
 module.exports = app => {
-  app.get("/api/friends/:id", (req, res) => {
-    User.findById(req.params.id)
+  app.get("/api/friends", requireAuth, (req, res) => {
+    User.findById(req.user.id)
       .then(user => {
         const friends = get(user, "friends");
         res.status(200).send(friends);
@@ -16,14 +16,15 @@ module.exports = app => {
       });
   });
 
-  app.post("/api/friends/:id", (req, res) => {
+  app.post("/api/friends", requireAuth, (req, res) => {
     const body = pick(req.body, ["userId", "type"]);
     const date = new Date().toISOString();
 
     //we are getting sender id from param
 
-    User.findById(req.params.id)
+    User.findById(req.user.id)
       .then(user => {
+        console.log(user);
         const requestReceived = {
           ...body,
           date,
