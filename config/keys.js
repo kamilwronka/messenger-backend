@@ -1,0 +1,5 @@
+module.exports = {
+  AWS_ACCESS: "AKIAILJCQORGMQYEC7HQ",
+  AWS_SECRET: "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",
+  SOME_KEY: "KEY"
+};
