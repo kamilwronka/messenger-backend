@@ -24,14 +24,14 @@ module.exports = app => {
 
     User.findById(req.user.id)
       .then(user => {
-        console.log(user);
         const requestReceived = {
           ...body,
           date,
-          name: user.username,
           direction: "received"
         };
         // we are getting receiver id from body
+
+        console.log(requestReceived);
 
         User.findOneAndUpdate(
           { _id: body.userId },

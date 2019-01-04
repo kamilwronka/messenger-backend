@@ -5,10 +5,6 @@ const RequestSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  name: {
-    type: String,
-    required: true
-  },
   date: {
     type: Date,
     required: true

@@ -3,7 +3,10 @@ const participant = require("../conversationParticipant/conversationParticipant.
 const message = require("../messages/messages.model");
 
 const ConversationSchema = new mongoose.Schema({
-  participants: [participant],
+  participants: {
+    type: Array,
+    required: true
+  },
   messages: [message],
   color: {
     type: String,
@@ -15,4 +18,6 @@ const ConversationSchema = new mongoose.Schema({
   }
 });
 
-module.exports = ConversationSchema;
+const ConversationModel = mongoose.model("Conversation", ConversationSchema);
+
+module.exports = ConversationModel;
