@@ -12,10 +12,6 @@ const RequestSchema = new mongoose.Schema({
   type: {
     type: String,
     required: true
-  },
-  direction: {
-    type: String,
-    required: true
   }
 });
 

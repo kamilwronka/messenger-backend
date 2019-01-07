@@ -48,12 +48,14 @@ module.exports = app => {
       req.user.requests,
       i => `${i._id}` === req.params.id
     );
+
+    console.log(desiredRequest, req.user.requests);
     const preparedFriend = {
       userId: desiredRequest.userId
     };
 
     await req.user.deleteRequest(desiredRequest);
-    const response = await req.user.addToFriends(preparedFriend);
+    const response = await req.user.addToFriends(desiredRequest.userId);
     res.status(200).send(response);
 
     // try {

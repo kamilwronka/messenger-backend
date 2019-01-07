@@ -4,10 +4,12 @@ const jwt = require("jsonwebtoken");
 const { pick, isNil } = require("lodash");
 const bcrypt = require("bcryptjs");
 
+const Schema = mongoose.Schema;
+
 const friend = require("../friend/friend.model");
 const request = require("../requests/requests.model");
 
-const UserSchema = new mongoose.Schema({
+const UserSchema = new Schema({
   online: {
     type: Boolean,
     required: true,
@@ -44,13 +46,21 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: false
   },
-  friends: [friend],
+  friends: [
+    {
+      type: Schema.Types.ObjectId,
+      required: false,
+      ref: "User"
+    }
+  ],
   requests: [request],
-  conversations: {
-    type: Array,
-    required: false,
-    default: []
-  },
+  conversations: [
+    {
+      type: Schema.Types.ObjectId,
+      required: false,
+      ref: "Conversation"
+    }
+  ],
   tokens: [
     {
       access: {
@@ -127,12 +137,10 @@ UserSchema.methods = {
       }
     });
   },
-  addToFriends: function(friend) {
+  addToFriends: function(id) {
     const user = this;
 
-    console.log(friend);
-
-    user.friends.push(friend);
+    user.friends.push(id);
     return user.save().then(user => {
       return user.friends;
     });

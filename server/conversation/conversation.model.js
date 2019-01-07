@@ -5,7 +5,8 @@ const message = require("../messages/messages.model");
 const ConversationSchema = new mongoose.Schema({
   participants: {
     type: Array,
-    required: true
+    required: true,
+    ref: "User"
   },
   messages: [message],
   color: {

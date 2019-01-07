@@ -6,65 +6,49 @@ const requireAuth = require("../middleware/requireAuth");
 module.exports = app => {
   app.get("/api/friends", requireAuth, (req, res) => {
     User.findById(req.user.id)
-      .then(user => {
-        const friends = get(user, "friends");
-        res.status(200).send(friends);
-      })
-      .catch(err => {
-        console.log(err);
-        res.status(400).send(err);
+      .populate("friends")
+      .exec((err, data) => {
+        console.log(data.friends);
+        const desiredData = data.friends.map(friend => {
+          return pick(friend, [
+            "_id",
+            "online",
+            "username",
+            "avatar",
+            "lastOnline"
+          ]);
+        });
+
+        res.send(desiredData);
       });
   });
 
-  app.post("/api/friends", requireAuth, (req, res) => {
+  app.post("/api/friends", requireAuth, async (req, res) => {
     const body = pick(req.body, ["userId", "type"]);
     const date = new Date().toISOString();
 
-    //we are getting sender id from param
+    const request = {
+      date,
+      userId: req.user._id,
+      type: body.type
+    };
 
-    User.findById(req.user.id)
-      .then(user => {
-        const requestReceived = {
-          ...body,
-          date,
-          direction: "received"
-        };
-        // we are getting receiver id from body
-
-        console.log(requestReceived);
-
-        User.findOneAndUpdate(
-          { _id: body.userId },
-          {
-            $push: {
-              requests: requestReceived
-            }
+    try {
+      let invitedUser = await User.findOneAndUpdate(
+        { _id: body.userId },
+        {
+          $push: {
+            requests: request
           }
-        )
-          .then(user => {
-            // user
-            //   .push({
-            //     requests: { ...request, direction: "sent", resolved: false }
-            //   })
-            //   .then(() => {
-            //     res.status(200).send({ data: "Zaproszenie wysłane" });
-            //   })
-            //   .catch(() => {
-            //     res
-            //       .status(400)
-            //       .send({ data: "Nie udało się wysłać zaproszenia." });
-            //   });
-            res
-              .status(200)
-              .send({ data: `Zaproszenie do ${user.username} wysłane` });
-          })
-          .catch(err => {
-            console.log(err);
-            res.status(400).send(err);
-          });
-      })
-      .catch(err => {
-        res.status(404).send(err);
-      });
+        }
+      );
+
+      res
+        .status(200)
+        .send({ data: `Zaproszenie do ${invitedUser.username} wysłane` });
+    } catch (err) {
+      console.log(err);
+      res.status(400).send(err);
+    }
   });
 };
