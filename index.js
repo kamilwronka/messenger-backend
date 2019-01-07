@@ -10,8 +10,11 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./swagger.json");
+const socketRequireAuth = require("./server/middleware/socketRequireAuth");
 
 require("./db/mongoose");
+
+io.use(socketRequireAuth);
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -36,6 +39,7 @@ require("./server/messages/messages.controller")(app, io);
 require("./server/friend/friend.controller")(app);
 require("./server/requests/requests.controller")(app);
 require("./server/fileUpload/fileUpload.controller")(app);
+require("./server/conversation/conversation.controller")(app);
 
 const PORT = process.env.PORT || 4000;
 

@@ -1,12 +1,8 @@
 const mongoose = require("mongoose");
 
 const ParticipantSchema = new mongoose.Schema({
-  name: {
+  userId: {
     type: String,
-    required: true
-  },
-  status: {
-    type: Boolean,
     required: true
   }
 });

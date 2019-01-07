@@ -3,16 +3,8 @@ const participant = require("../conversationParticipant/conversationParticipant.
 const message = require("../messages/messages.model");
 
 const FriendSchema = new mongoose.Schema({
-  name: {
+  userId: {
     type: String,
-    required: false
-  },
-  avatar: {
-    type: String,
-    required: false
-  },
-  status: {
-    type: Boolean,
     required: true
   }
 });
