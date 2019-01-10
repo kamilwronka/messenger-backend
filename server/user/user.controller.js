@@ -1,4 +1,4 @@
-const { pick, find } = require("lodash");
+const { pick, find, omit } = require("lodash");
 
 const User = require("../user/user.model");
 const Conversation = require("../conversation/conversation.model");
@@ -25,7 +25,42 @@ module.exports = app => {
   });
 
   app.get("/api/users/conversations", requireAuth, async (req, res) => {
-    res.send(req.user.conversations);
+    // res.send(req.user.conversations);
+    User.findById(req.user.id)
+      .populate({
+        path: "conversations",
+        populate: {
+          path: "participants",
+          model: "User"
+        }
+      })
+      .exec((err, data) => {
+        const desiredData = data.conversations.map(conversation => {
+          const conversations = pick(conversation, [
+            "_id",
+            "participants",
+            "color",
+            "name"
+          ]);
+          console.log(conversations);
+          conversations.participants = conversations.participants.map(
+            participant => {
+              return pick(participant, [
+                "_id",
+                "username",
+                "avatar",
+                "online",
+                "lastOnline"
+              ]);
+            }
+          );
+          return conversations;
+        });
+
+        res.send(desiredData);
+      });
+
+    // });
   });
 
   app.post("/api/users/avatar", requireAuth, async (req, res) => {
@@ -43,19 +78,25 @@ module.exports = app => {
   });
 
   app.post("/api/users/requests/:id", requireAuth, async (req, res) => {
-    console.log(req.params);
     const desiredRequest = find(
       req.user.requests,
       i => `${i._id}` === req.params.id
     );
 
-    console.log(desiredRequest, req.user.requests);
     const preparedFriend = {
       userId: desiredRequest.userId
     };
 
-    await req.user.deleteRequest(desiredRequest);
     const response = await req.user.addToFriends(desiredRequest.userId);
+    await req.user.deleteRequest(desiredRequest);
+    await User.findByIdAndUpdate(
+      { _id: desiredRequest.userId },
+      {
+        $push: {
+          friends: req.user.id
+        }
+      }
+    );
     res.status(200).send(response);
 
     // try {
