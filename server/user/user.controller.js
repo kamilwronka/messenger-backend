@@ -14,14 +14,6 @@ module.exports = app => {
         }
         res.send(docs);
       });
-
-    // User.find()
-    //   .then(users => {
-    //     res.status(200).send(users);
-    //   })
-    //   .catch(err => {
-    //     res.status(400).send(err);
-    //   });
   });
 
   app.get("/api/users/conversations", requireAuth, async (req, res) => {
@@ -66,12 +58,24 @@ module.exports = app => {
   app.post("/api/users/avatar", requireAuth, async (req, res) => {
     const body = pick(req.body, ["url"]);
 
-    console.log(body);
-
     try {
       await User.findByIdAndUpdate(req.user.id, { $set: { avatar: body.url } });
       const user = await User.findById(req.user.id);
       res.send(user.avatar);
+    } catch (err) {
+      res.status(400).send("Wystąpił problem, spróbuj ponownie.");
+    }
+  });
+
+  app.post("/api/users/backgroundImage", requireAuth, async (req, res) => {
+    const body = pick(req.body, ["url"]);
+
+    try {
+      await User.findByIdAndUpdate(req.user.id, {
+        $set: { backgroundImage: body.url }
+      });
+      const user = await User.findById(req.user.id);
+      res.send(user.backgroundImage);
     } catch (err) {
       res.status(400).send("Wystąpił problem, spróbuj ponownie.");
     }

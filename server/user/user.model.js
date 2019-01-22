@@ -46,6 +46,10 @@ const UserSchema = new Schema({
     type: String,
     required: false
   },
+  backgroundImage: {
+    type: String,
+    required: false
+  },
   friends: [
     {
       type: Schema.Types.ObjectId,

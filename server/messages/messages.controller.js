@@ -6,6 +6,8 @@ const { isEmpty, find } = require("lodash");
 
 module.exports = (app, io) => {
   io.on("connection", function(socket) {
+    socket.join(socket.user.id);
+    console.log(socket.user.id);
     console.log("connected");
     const user = socket.user;
     user.online = true;
@@ -18,21 +20,25 @@ module.exports = (app, io) => {
     });
 
     socket.on("message", async function(conversationId, msg, toUsers) {
-      // const message = new Message({ ...msg, date: new Date().toISOString() });
-      console.log(conversationId);
+      const participants = [user.id, ...toUsers];
       const conversation = await Conversation.findById(conversationId);
+      const preparedMsg = {
+        ...msg,
+        date: new Date().toISOString(),
+        read: false
+      };
 
       console.log(user.id, toUsers);
 
-      if (!isEmpty(conversation) === "dupa") {
-        conversation.messages.push(msg);
+      if (!isEmpty(conversation)) {
+        conversation.messages.push(preparedMsg);
         // console.log(conversation.messages);
         conversation.save().then(() => console.log("zapisano w bazie"));
       } else {
         // console.log(toUsers, user.id);
         const newConversation = new Conversation({
-          participants: [user.id, ...toUsers],
-          messages: [msg]
+          participants,
+          messages: [preparedMsg]
         });
         newConversation.save().then(conversation => {
           // console.log(conversation);
@@ -53,9 +59,13 @@ module.exports = (app, io) => {
           });
         });
       }
-      console.log(msg);
-      // message.save().then(msg => io.emit("message", msg));
-      io.emit("message", msg);
+      console.log(preparedMsg);
+      // message.save().then(preparedMsg => io.emit("message", preparedMsg));
+
+      participants.forEach(elem => {
+        console.log(elem);
+        io.to(elem).emit("message", preparedMsg);
+      });
     });
   });
   app.get("/api/messages", (req, res) => {
