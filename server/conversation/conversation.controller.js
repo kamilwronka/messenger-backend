@@ -1,4 +1,4 @@
-const { get, pick } = require("lodash");
+const { get, pick, omit } = require("lodash");
 
 const Conversation = require("../conversation/conversation.model");
 const requireAuth = require("../middleware/requireAuth");
@@ -10,23 +10,37 @@ module.exports = app => {
       .exec(function(err, conversations) {
         res.send(conversations);
       });
-    // .then(conversation => {
-    //   res.status(200).send(conversation);
-    // })
-    // .catch(err => {
-    //   console.log(err);
-    //   res.status(400).send(err);
-    // });
   });
 
-  //   app.get("/api/conversations", requireAuth, async (req, res) => {
-  //     Conversation.find()
-  //     .then(conversation => {
-  //       res.status(200).send(conversation);
-  //     })
-  //     .catch(err => {
-  //       console.log(err);
-  //       res.status(400).send(err);
-  //     });
-  //   });
+  app.get("/api/conversations/:id/info", requireAuth, (req, res) => {
+    Conversation.findById(req.params.id)
+      .populate("participants")
+      .exec(function(err, conversation) {
+        res.send(omit(conversation.toJSON(), ["messages"]));
+      });
+  });
+
+  app.post("/api/conversations/:id/color", requireAuth, async (req, res) => {
+    await Conversation.findByIdAndUpdate(req.params.id, {
+      $set: { color: req.body.color }
+    });
+    let conversation = await Conversation.findById(req.params.id);
+    res.send(omit(conversation.toJSON(), ["messages"]));
+  });
+
+  app.post("/api/conversations/:id/emoji", requireAuth, async (req, res) => {
+    await Conversation.findByIdAndUpdate(req.params.id, {
+      $set: { emoji: req.body.emoji }
+    });
+    let conversation = await Conversation.findById(req.params.id);
+    res.send(omit(conversation.toJSON(), ["messages"]));
+  });
+
+  app.post("/api/conversations/:id/name", requireAuth, async (req, res) => {
+    await Conversation.findByIdAndUpdate(req.params.id, {
+      $set: { name: req.body.name }
+    });
+    let conversation = await Conversation.findById(req.params.id);
+    res.send(omit(conversation.toJSON(), ["messages"]));
+  });
 };

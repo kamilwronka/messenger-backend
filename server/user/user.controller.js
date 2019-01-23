@@ -1,4 +1,4 @@
-const { pick, find, omit } = require("lodash");
+const { pick, find, omit, last } = require("lodash");
 
 const User = require("../user/user.model");
 const Conversation = require("../conversation/conversation.model");
@@ -28,14 +28,14 @@ module.exports = app => {
       })
       .exec((err, data) => {
         const desiredData = data.conversations.map(conversation => {
-          const conversations = pick(conversation, [
+          const desiredConversation = pick(conversation, [
             "_id",
             "participants",
             "color",
             "name"
           ]);
-          console.log(conversations);
-          conversations.participants = conversations.participants.map(
+          desiredConversation.lastMessage = last(conversation.messages);
+          desiredConversation.participants = desiredConversation.participants.map(
             participant => {
               return pick(participant, [
                 "_id",
@@ -46,7 +46,7 @@ module.exports = app => {
               ]);
             }
           );
-          return conversations;
+          return desiredConversation;
         });
 
         res.send(desiredData);

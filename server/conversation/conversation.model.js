@@ -9,6 +9,10 @@ const ConversationSchema = new mongoose.Schema({
     ref: "User"
   },
   messages: [message],
+  emoji: {
+    type: String,
+    required: false
+  },
   color: {
     type: String,
     required: false
