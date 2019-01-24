@@ -7,7 +7,6 @@ const { isEmpty, find } = require("lodash");
 module.exports = (app, io) => {
   io.on("connection", function(socket) {
     socket.join(socket.user.id);
-    console.log(socket.user.id);
     console.log("connected");
     const user = socket.user;
     user.online = true;

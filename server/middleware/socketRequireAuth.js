@@ -3,8 +3,6 @@ const User = require("../user/user.model");
 const socketRequireAuth = (socket, next) => {
   const token = socket.handshake.query.token;
 
-  console.log(token);
-
   User.findByToken(token)
     .then(user => {
       if (!user) {
