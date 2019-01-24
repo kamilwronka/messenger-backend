@@ -20,6 +20,10 @@ const MessageSchema = new mongoose.Schema({
   messageType: {
     type: String,
     required: false
+  },
+  metadata: {
+    type: Object,
+    required: false
   }
 });
 
