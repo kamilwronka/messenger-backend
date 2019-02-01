@@ -10,7 +10,7 @@ RUN yarn
 
 COPY . .
 
-ENV MONGODB_URI=mongodb://localhost:27017
+ENV MONGODB_URI=mongodb://localhost:1337/messenger
 
 EXPOSE 4000
 
