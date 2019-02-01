@@ -10,6 +10,8 @@ RUN yarn
 
 COPY . .
 
+ENV MONGODB_URI=mongodb://localhost:27017
+
 EXPOSE 4000
 
 ENTRYPOINT ["yarn", "start"]
