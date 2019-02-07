@@ -57,12 +57,18 @@ const UserSchema = new Schema({
       ref: "User"
     }
   ],
-  requests: [request],
   conversations: [
     {
       type: Schema.Types.ObjectId,
       required: false,
       ref: "Conversation"
+    }
+  ],
+  requests: [
+    {
+      type: Schema.Types.ObjectId,
+      required: false,
+      ref: "User"
     }
   ],
   tokens: [

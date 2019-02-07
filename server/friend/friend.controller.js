@@ -1,6 +1,7 @@
 const { get, pick } = require("lodash");
 
 const User = require("../user/user.model");
+const Request = require("../requests/requests.model");
 const requireAuth = require("../middleware/requireAuth");
 
 module.exports = app => {
@@ -25,20 +26,21 @@ module.exports = app => {
 
   app.post("/api/friends", requireAuth, async (req, res) => {
     const body = pick(req.body, ["userId", "type"]);
-    const date = new Date().toISOString();
 
-    const request = {
-      date,
-      userId: req.user._id,
+    const newRequest = new Request({
+      fromUser: req.user._id,
+      toUser: body.userId,
       type: body.type
-    };
+    });
+
+    await newRequest.save();
 
     try {
       let invitedUser = await User.findOneAndUpdate(
         { _id: body.userId },
         {
           $push: {
-            requests: request
+            requests: newRequest._id
           }
         }
       );

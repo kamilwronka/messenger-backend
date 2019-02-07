@@ -1,7 +1,7 @@
 const { pick, find, omit, last } = require("lodash");
 
 const User = require("../user/user.model");
-const Conversation = require("../conversation/conversation.model");
+const Request = require("../requests/requests.model");
 const requireAuth = require("../middleware/requireAuth");
 
 module.exports = app => {
@@ -82,19 +82,12 @@ module.exports = app => {
   });
 
   app.post("/api/users/requests/:id", requireAuth, async (req, res) => {
-    const desiredRequest = find(
-      req.user.requests,
-      i => `${i._id}` === req.params.id
-    );
+    const desiredRequest = await Request.findById(req.params.id);
 
-    const preparedFriend = {
-      userId: desiredRequest.userId
-    };
-
-    const response = await req.user.addToFriends(desiredRequest.userId);
-    await req.user.deleteRequest(desiredRequest);
+    const response = await req.user.addToFriends(desiredRequest.fromUser._id);
+    await Request.findByIdAndDelete(desiredRequest._id);
     await User.findByIdAndUpdate(
-      { _id: desiredRequest.userId },
+      { _id: desiredRequest.toUser._id },
       {
         $push: {
           friends: req.user.id
@@ -110,5 +103,11 @@ module.exports = app => {
     // } catch (err) {
     //   res.status(400).send("Wystąpił problem, spróbuj ponownie.");
     // }
+  });
+
+  app.delete("/api/users/requests/:id", requireAuth, async (req, res) => {
+    await Request.findByIdAndDelete(req.params.id);
+
+    res.status(200).send();
   });
 };

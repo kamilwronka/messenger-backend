@@ -1,18 +1,25 @@
 const mongoose = require("mongoose");
 
-const RequestSchema = new mongoose.Schema({
-  userId: {
-    type: String,
-    required: true
+const RequestSchema = new mongoose.Schema(
+  {
+    fromUser: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "User"
+    },
+    toUser: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "User"
+    },
+    type: {
+      type: String,
+      required: true
+    }
   },
-  date: {
-    type: Date,
-    required: true
-  },
-  type: {
-    type: String,
-    required: true
-  }
-});
+  { timestamps: true }
+);
 
-module.exports = RequestSchema;
+const RequestModel = mongoose.model("Request", RequestSchema);
+
+module.exports = RequestModel;
