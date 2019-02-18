@@ -19,6 +19,7 @@ module.exports = (app, io) => {
     });
 
     socket.on("message", async function(conversationId, msg, toUsers) {
+      console.log("msg");
       const participants = [user.id, ...toUsers];
       const conversation = await Conversation.findById(conversationId);
       const preparedMsg = {
@@ -29,41 +30,16 @@ module.exports = (app, io) => {
 
       console.log(user.id, toUsers);
 
-      if (!isEmpty(conversation)) {
-        conversation.messages.push(preparedMsg);
-        // console.log(conversation.messages);
-        conversation.save().then(() => console.log("zapisano w bazie"));
-      } else {
-        // console.log(toUsers, user.id);
-        const newConversation = new Conversation({
-          participants,
-          messages: [preparedMsg]
-        });
-        newConversation.save().then(conversation => {
-          // console.log(conversation);
-          user.conversations.push(conversation._id);
-          User.findByIdAndUpdate(
-            { _id: toUsers[0] },
-            {
-              $push: {
-                conversations: conversation._id
-              }
-            }
-          )
-            .then(() => console.log("saved"))
-            .catch(() => console.log("couldnt find"));
-          user.save().then(user => {
-            console.log("emitted");
-            io.emit("newConversation", conversation._id);
-          });
-        });
-      }
+      conversation.messages.push(preparedMsg);
+      // console.log(conversation.messages);
+      conversation.save().then(() => console.log("zapisano w bazie"));
+
       console.log(preparedMsg);
       // message.save().then(preparedMsg => io.emit("message", preparedMsg));
 
       participants.forEach(elem => {
-        console.log(elem);
         io.to(elem).emit("message", preparedMsg);
+        io.to(elem).emit("message2", preparedMsg);
       });
     });
   });

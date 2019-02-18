@@ -9,81 +9,84 @@ const Schema = mongoose.Schema;
 const friend = require("../friend/friend.model");
 const request = require("../requests/requests.model");
 
-const UserSchema = new Schema({
-  online: {
-    type: Boolean,
-    required: true,
-    default: false
-  },
-  lastOnline: {
-    type: Date,
-    required: false,
-    default: null
-  },
-  email: {
-    type: String,
-    required: true,
-    trim: true,
-    minlength: 1,
-    unique: true,
-    validate: {
-      validator: validator.isEmail,
-      message: "{VALUE} is not a valid email"
-    }
-  },
-  password: {
-    type: String,
-    required: true,
-    minlength: 6
-  },
-  username: {
-    type: String,
-    required: true,
-    minlength: 3,
-    unique: true
-  },
-  avatar: {
-    type: String,
-    required: false
-  },
-  backgroundImage: {
-    type: String,
-    required: false
-  },
-  friends: [
-    {
-      type: Schema.Types.ObjectId,
+const UserSchema = new Schema(
+  {
+    online: {
+      type: Boolean,
+      required: true,
+      default: false
+    },
+    lastOnline: {
+      type: Date,
       required: false,
-      ref: "User"
-    }
-  ],
-  conversations: [
-    {
-      type: Schema.Types.ObjectId,
-      required: false,
-      ref: "Conversation"
-    }
-  ],
-  requests: [
-    {
-      type: Schema.Types.ObjectId,
-      required: false,
-      ref: "User"
-    }
-  ],
-  tokens: [
-    {
-      access: {
-        type: String,
-        required: true
-      },
-      token: {
-        type: String,
-        required: true
+      default: null
+    },
+    email: {
+      type: String,
+      required: true,
+      trim: true,
+      minlength: 1,
+      unique: true,
+      validate: {
+        validator: validator.isEmail,
+        message: "{VALUE} is not a valid email"
       }
-    }
-  ]
-});
+    },
+    password: {
+      type: String,
+      required: true,
+      minlength: 6
+    },
+    username: {
+      type: String,
+      required: true,
+      minlength: 3,
+      unique: true
+    },
+    avatar: {
+      type: String,
+      required: false
+    },
+    backgroundImage: {
+      type: String,
+      required: false
+    },
+    friends: [
+      {
+        type: Schema.Types.ObjectId,
+        required: false,
+        ref: "User"
+      }
+    ],
+    conversations: [
+      {
+        type: Schema.Types.ObjectId,
+        required: false,
+        ref: "Conversation"
+      }
+    ],
+    requests: [
+      {
+        type: Schema.Types.ObjectId,
+        required: false,
+        ref: "User"
+      }
+    ],
+    tokens: [
+      {
+        access: {
+          type: String,
+          required: true
+        },
+        token: {
+          type: String,
+          required: true
+        }
+      }
+    ]
+  },
+  { timestamps: true }
+);
 
 UserSchema.pre("save", function(next) {
   const user = this;
