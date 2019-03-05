@@ -51,6 +51,10 @@ const UserSchema = new Schema(
       type: String,
       required: false
     },
+    defaultColor: {
+      type: String,
+      required: false
+    },
     friends: [
       {
         type: Schema.Types.ObjectId,
@@ -69,7 +73,14 @@ const UserSchema = new Schema(
       {
         type: Schema.Types.ObjectId,
         required: false,
-        ref: "User"
+        ref: "Request"
+      }
+    ],
+    requestsSent: [
+      {
+        type: Schema.Types.ObjectId,
+        required: false,
+        ref: "Request"
       }
     ],
     tokens: [
@@ -95,6 +106,7 @@ UserSchema.pre("save", function(next) {
     user.friends = [];
     user.conversations = [];
     user.requests = [];
+    user.defaultColor = "#912F56";
   }
 
   if (user.isModified("password")) {

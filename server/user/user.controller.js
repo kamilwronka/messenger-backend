@@ -6,14 +6,28 @@ const Conversation = require("../conversation/conversation.model");
 const requireAuth = require("../middleware/requireAuth");
 
 module.exports = app => {
-  app.get("/api/users", (req, res) => {
+  app.get("/api/users", requireAuth, (req, res) => {
     User.find({ $text: { $search: req.query.query } })
       .limit(10)
       .exec(function(err, docs) {
         if (err) {
-          res.send(err);
+          return res.send(err);
         }
-        res.send(docs);
+        const desiredData = docs.map(elem => {
+          const isOnFriendsList = find(
+            elem.friends,
+            friend => friend === req.user.id
+          );
+          if (isOnFriendsList) {
+            return { ...elem, onFriendsList: true };
+          } else {
+            return elem;
+          }
+        });
+
+        console.log(desiredData);
+
+        res.send(desiredData);
       });
   });
 

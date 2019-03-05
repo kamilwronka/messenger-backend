@@ -1,4 +1,4 @@
-const { get, pick } = require("lodash");
+const { get, pick, find } = require("lodash");
 
 const User = require("../user/user.model");
 const Request = require("../requests/requests.model");
@@ -25,7 +25,28 @@ module.exports = app => {
   });
 
   app.post("/api/friends", requireAuth, async (req, res) => {
+    let match;
     const body = pick(req.body, ["userId", "type"]);
+
+    if (`${req.user._id}` === body.userId) {
+      return res
+        .status(400)
+        .send("Nie możesz dodać samego siebie do znajomch.");
+    }
+
+    const invitedUser = await User.findById(body.userId);
+
+    invitedUser.requests.forEach(invitedUserRequest => {
+      match = req.user.requestsSent.filter(sendingUserRequest => {
+        return sendingUserRequest !== invitedUserRequest;
+      });
+    });
+
+    if (match) {
+      return res
+        .status(400)
+        .send("Nie możesz wysłać ponownie zaproszenia tej osobie.");
+    }
 
     const newRequest = new Request({
       fromUser: req.user._id,
@@ -36,7 +57,7 @@ module.exports = app => {
     await newRequest.save();
 
     try {
-      let invitedUser = await User.findOneAndUpdate(
+      await User.findOneAndUpdate(
         { _id: body.userId },
         {
           $push: {
@@ -44,6 +65,9 @@ module.exports = app => {
           }
         }
       );
+
+      req.user.requestsSent.push(newRequest._id);
+      await req.user.save();
 
       res
         .status(200)

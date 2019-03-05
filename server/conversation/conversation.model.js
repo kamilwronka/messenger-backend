@@ -26,6 +26,17 @@ const ConversationSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+ConversationSchema.pre('save', function(next) {
+  const conversation = this;
+
+  if(conversation.isNew) {
+    conversation.color = '#912F56';
+    conversation.emoji = '😀';
+  }
+
+  next();
+});
+
 const ConversationModel = mongoose.model("Conversation", ConversationSchema);
 
 module.exports = ConversationModel;
