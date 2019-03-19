@@ -1,5 +1,5 @@
 {
-  "name": "game-backend",
+  "name": "messenger-backend",
   "scripts": {
     "start": "node ./index.js",
     "dev": "webpack --config webpack.server.js --watch",

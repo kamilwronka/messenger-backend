@@ -1,5 +1,9 @@
 FROM node:10.15.3-alpine
 
+ARG AWS_ACCESS
+ARG AWS_SECRET
+ARG MONGODB_URI
+
 WORKDIR /usr/src/app
 
 COPY package*.json ./
@@ -9,8 +13,6 @@ COPY yarn.lock ./
 RUN yarn
 
 COPY . .
-
-ENV MONGODB_URI=mongodb://localhost:27017/messenger
 
 EXPOSE 4000
 
