@@ -10,7 +10,7 @@ jobs:
          docker login -u $DOCKER_ID -p $DOCKER_PASS
 
      # build the application image
-     - run: docker build -t $DOCKER_ID/messenger .
+     - run: docker build -t $DOCKER_ID/messenger-backend .
 
      # deploy the image
-     - run: docker push $DOCKER_ID/messenger
+     - run: docker push $DOCKER_ID/messenger-backend
