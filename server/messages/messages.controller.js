@@ -4,43 +4,30 @@ const Conversation = require("../conversation/conversation.model");
 
 const { isEmpty, find } = require("lodash");
 
-module.exports = (app, io) => {
-  io.on("connection", function(socket) {
-    socket.join(socket.user.id);
-    console.log("connected");
-    const user = socket.user;
-    user.online = true;
-    user.lastOnline = Date.now();
-    user.save().then(() => console.log("online"));
+module.exports = (app, io, socket, user) => {
+  socket.on("disconnect", () => {
+    user.online = false;
+    user.save().then(() => console.log("offline"));
+  });
 
-    socket.on("disconnect", () => {
-      user.online = false;
-      user.save().then(() => console.log("offline"));
-    });
+  socket.on("message", async function(conversationId, msg, toUsers) {
+    console.log("msg");
+    const participants = [user.id, ...toUsers];
+    const conversation = await Conversation.findById(conversationId);
+    const preparedMsg = {
+      ...msg,
+      date: new Date().toISOString(),
+      read: false
+    };
 
-    socket.on("message", async function(conversationId, msg, toUsers) {
-      console.log("msg");
-      const participants = [user.id, ...toUsers];
-      const conversation = await Conversation.findById(conversationId);
-      const preparedMsg = {
-        ...msg,
-        date: new Date().toISOString(),
-        read: false
-      };
+    console.log(user.id, toUsers);
 
-      console.log(user.id, toUsers);
+    conversation.messages.push(preparedMsg);
+    await conversation.save();
 
-      conversation.messages.push(preparedMsg);
-      // console.log(conversation.messages);
-      conversation.save().then(() => console.log("zapisano w bazie"));
-
-      console.log(preparedMsg);
-      // message.save().then(preparedMsg => io.emit("message", preparedMsg));
-
-      participants.forEach(elem => {
-        io.to(elem).emit("message", preparedMsg);
-        io.to(elem).emit("message2", preparedMsg);
-      });
+    participants.forEach(elem => {
+      io.to(elem).emit("message", preparedMsg);
+      // io.to(elem).emit("message2", preparedMsg);
     });
   });
   app.get("/api/messages", (req, res) => {

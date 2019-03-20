@@ -1,17 +1,43 @@
 const { get, pick, omit } = require("lodash");
+const { ObjectId } = require("mongoose").Types;
 
 const Conversation = require("../conversation/conversation.model");
 const requireAuth = require("../middleware/requireAuth");
 
 module.exports = app => {
   app.get("/api/conversations/:id", requireAuth, (req, res) => {
-    Conversation.findById(req.params.id)
-      .populate({
-        path: "participants",
-        model: "User"
+    const { pageSize, page } = req.query;
+    Conversation.aggregate()
+      .lookup({
+        from: "users",
+        localField: "participants",
+        foreignField: "_id",
+        as: "participants"
       })
-      .exec(function(err, conversations) {
-        res.send(conversations);
+      .project({
+        _id: { $toString: "$_id" },
+        metadata: {
+          totalMessages: { $size: "$messages" }
+        },
+        reversed: {
+          $reverseArray: "$messages"
+        }
+      })
+      .project({
+        tempMessages: {
+          $slice: ["$reversed", pageSize * page, parseInt(pageSize, 10)]
+        }
+      })
+      .project({
+        messages: {
+          $reverseArray: "$tempMessages"
+        }
+      })
+      .match({
+        _id: { $regex: req.params.id, $options: "i" }
+      })
+      .exec(function(err, conversation) {
+        res.send(conversation[0]);
       });
   });
 
