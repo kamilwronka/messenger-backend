@@ -27,4 +27,20 @@ module.exports = app => {
       }
     );
   });
+
+  app.get("/api/upload/video", requireAuth, (req, res) => {
+    const key = `${req.user.id}/${uuid()}.mp4`;
+
+    S3.getSignedUrl(
+      "putObject",
+      {
+        Bucket: "messenger-dev-bucket",
+        ContentType: "video/mp4",
+        Key: key
+      },
+      (err, url) => {
+        res.send({ key, url });
+      }
+    );
+  });
 };

@@ -41,14 +41,15 @@ io.on("connection", function(socket) {
   user.lastOnline = Date.now();
   user.save().then(() => console.log("online"));
 
-  require("./server/auth/auth.controller")(app);
-  require("./server/user/user.controller")(app);
   require("./server/messages/messages.controller")(app, io, socket, user);
   require("./server/friend/friend.controller")(app, io, socket, user);
   require("./server/requests/requests.controller")(app, io, socket, user);
   require("./server/fileUpload/fileUpload.controller")(app);
   require("./server/conversation/conversation.controller")(app);
 });
+
+require("./server/auth/auth.controller")(app);
+require("./server/user/user.controller")(app);
 
 const PORT = process.env.PORT || 4000;
 
