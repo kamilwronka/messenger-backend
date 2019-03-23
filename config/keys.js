@@ -1,5 +1,5 @@
 const production = process.env.NODE_ENV === "production";
-const devKeys = production ? require("./keys_dev") : {};
+const devKeys = production ? {} : require("./keys_dev");
 
 console.log(
   process.env.AWS_ACCESS,
