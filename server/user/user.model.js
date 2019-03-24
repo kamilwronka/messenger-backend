@@ -16,6 +16,10 @@ const UserSchema = new Schema(
       required: true,
       default: false
     },
+    pushNotificationsToken: {
+      type: String,
+      required: false
+    },
     lastOnline: {
       type: Date,
       required: false,

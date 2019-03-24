@@ -11,6 +11,10 @@ const cookieParser = require("cookie-parser");
 const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./swagger.json");
 const socketRequireAuth = require("./server/middleware/socketRequireAuth");
+const gcm = require("node-gcm");
+const keys = require("./config/keys");
+
+const sender = new gcm.Sender(keys.FCM_SENDER);
 
 require("./db/mongoose");
 
@@ -33,6 +37,29 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 app.use("/api/doc", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
+app.post("/dupa", (req, res) => {
+  const { message, name } = req.body;
+
+  const gcmMessage = new gcm.Message({
+    collapseKey: name,
+    notification: {
+      title: name,
+      body: message,
+      tag: name,
+      sound: "default"
+    }
+  });
+
+  sender.send(
+    gcmMessage,
+    { registrationTokens: deviceTokens },
+    (err, response) => {
+      console.log(response);
+    }
+  );
+  res.end();
+});
+
 io.on("connection", function(socket) {
   socket.join(socket.user.id);
   console.log("connected");
@@ -41,7 +68,23 @@ io.on("connection", function(socket) {
   user.lastOnline = Date.now();
   user.save().then(() => console.log("online"));
 
-  require("./server/messages/messages.controller")(app, io, socket, user);
+  socket.on("disconnect", () => {
+    user.online = false;
+    user.save().then(() => console.log("offline"));
+  });
+
+  socket.on("newPushToken", token => {
+    user.pushNotificationsToken = token;
+    user.save().then(() => console.log("Token saved", token));
+  });
+
+  require("./server/messages/messages.controller")(
+    app,
+    io,
+    socket,
+    user,
+    sender
+  );
   require("./server/friend/friend.controller")(app, io, socket, user);
   require("./server/requests/requests.controller")(app, io, socket, user);
   require("./server/conversation/conversation.controller")(app);
