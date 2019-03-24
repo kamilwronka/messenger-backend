@@ -6,7 +6,8 @@ const gcm = require("node-gcm");
 const { isEmpty, find } = require("lodash");
 
 const getPushNotificationContent = (msg, username) => {
-  switch (msg.type) {
+  console.log(msg);
+  switch (msg.messageType) {
     case "video":
       return `${username} sent video.`;
     case "photo":
