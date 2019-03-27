@@ -5,6 +5,69 @@ const Request = require("../requests/requests.model");
 const requireAuth = require("../middleware/requireAuth");
 
 module.exports = (app, io, socket, user) => {
+  socket.on("newNotification", async data => {
+    const { requestedUserId, type } = data;
+    const { user } = socket;
+    let match;
+
+    if (`${user._id}` === requestedUserId) {
+      return io.to(user._id).emit("requestSent", {
+        error: "You are trying to add yourself."
+      });
+    }
+
+    const invitedUser = await User.findById(requestedUserId);
+
+    invitedUser.requests.forEach(invitedUserRequest => {
+      match = user.requestsSent.filter(sendingUserRequest => {
+        return sendingUserRequest !== invitedUserRequest;
+      });
+    });
+
+    if (!isEmpty(match)) {
+      return io.to(user._id).emit("requestSent", {
+        error: "You have already invited this user."
+      });
+    }
+
+    const newRequest = new Request({
+      fromUser: user._id,
+      toUser: requestedUserId,
+      type
+    });
+
+    await newRequest.save();
+
+    try {
+      await User.findOneAndUpdate(
+        { _id: requestedUserId },
+        {
+          $push: {
+            requests: newRequest._id
+          }
+        }
+      );
+
+      user.requestsSent.push(newRequest._id);
+      await user.save();
+
+      io.to(invitedUser._id).emit("requestReceived", {
+        fromUser: user,
+        toUser: requestedUserId,
+        type,
+        _id: newRequest._id
+      });
+
+      io.to(user._id).emit("requestSent", {
+        toUser: invitedUser.username,
+        _id: newRequest._id
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(400).send(err);
+    }
+  });
+
   app.get("/api/friends", requireAuth, (req, res) => {
     User.findById(req.user.id)
       .populate("friends")
