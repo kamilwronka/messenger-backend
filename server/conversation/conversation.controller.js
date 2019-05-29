@@ -24,15 +24,15 @@ module.exports = app => {
         }
       })
       .project({
-        tempMessages: {
+        messages: {
           $slice: ["$reversed", pageSize * page, parseInt(pageSize, 10)]
         }
       })
-      .project({
-        messages: {
-          $reverseArray: "$tempMessages"
-        }
-      })
+      // .project({
+      //   messages: {
+      //     $reverseArray: "$tempMessages"
+      //   }
+      // })
       .match({
         _id: { $regex: req.params.id, $options: "i" }
       })
