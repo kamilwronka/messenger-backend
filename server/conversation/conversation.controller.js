@@ -41,6 +41,50 @@ module.exports = app => {
       });
   });
 
+  app.get("/api/conversations/:id/photos", requireAuth, (req, res) => {
+    const { pageSize, page } = req.query;
+    Conversation.aggregate()
+      .lookup({
+        from: "users",
+        localField: "participants",
+        foreignField: "_id",
+        as: "participants"
+      })
+      .project({
+        reversed: {
+          $reverseArray: "$messages"
+        }
+      })
+      .project({
+        _id: { $toString: "$_id" },
+        filtered: {
+          $filter: {
+            input: "$reversed",
+            as: "message",
+            cond: {
+              $eq: ["$$message.messageType", "photo"]
+            }
+          }
+        }
+      })
+      .project({
+        metadata: {
+          totalPhotos: {
+            $size: "$filtered"
+          }
+        },
+        photos: {
+          $slice: ["$filtered", pageSize * page, parseInt(pageSize, 10)]
+        }
+      })
+      .match({
+        _id: { $regex: req.params.id, $options: "i" }
+      })
+      .exec(function(err, conversation) {
+        res.send(conversation[0]);
+      });
+  });
+
   app.get("/api/conversations/:id/info", requireAuth, (req, res) => {
     Conversation.findById(req.params.id)
       .populate({
