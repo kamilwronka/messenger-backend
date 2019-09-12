@@ -18,6 +18,43 @@ const getPushNotificationContent = (msg, username) => {
 };
 
 module.exports = (app, io, socket, user, sender) => {
+  socket.on("changeConversationColor", async ({ conversationId, color }) => {
+    Conversation.update(
+      { _id: conversationId, participants: { $in: [socket.user._id] } },
+      { $set: { color: color } },
+      err => {
+        if (err) {
+          //error fallback
+          socket.emit("changeConversationColor", err);
+          return;
+        } else {
+          Conversation.findById(conversationId, (err, conversation) => {
+            if (err) {
+              socket.emit("changeConversationColor", err);
+            }
+
+            const message = {
+              messageType: "colorChange",
+              userId: socket.user._id,
+              messageContent: color,
+              date: new Date().toISOString(),
+              read: false
+            };
+
+            conversation.participants.forEach(elem => {
+              io.to(elem).emit("changeConversationColor", {
+                color,
+                conversationId
+              });
+
+              io.to(elem).emit("message", message);
+            });
+          });
+        }
+      }
+    );
+  });
+
   socket.on("message", async function(conversationId, msg, toUsers) {
     console.log("msg");
     const participants = [user.id, ...toUsers];
