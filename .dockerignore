@@ -15,6 +15,3 @@ docker-compose*
 README.md
 LICENSE
 .vscode
-rossmann-cache-cleaner-client/node_modules
-rossmann-cache-cleaner-client/npm-debug.log
-rossmann-cache-cleaner-client/.vscode
